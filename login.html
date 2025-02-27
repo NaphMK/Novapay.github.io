@@ -1,37 +1,4 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<?php
-require_once ('C:\xampp\htdocs\vtu\k-wd-dashboard\backend\config\db.php');
-
-$message = "";
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    // Query to check user credentials
-    $query = "SELECT * FROM users WHERE username = :username";
-    $stmt = $pdo->prepare($query);
-    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-    $stmt->execute();
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-
-    if ($user && password_verify($password, $user['password'])) {
-        // Start a session and store user information
-        session_start();
-        $_SESSION['id'] = $user['id'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['email'] = $user['email'];
-       
-
-        // Redirect to dashboard
-        header("Location: ../index.php");
-        exit();
-    } else {
-        $message = "Invalid username or password!";
-    }
-}
-?>
 
 
 <!DOCTYPE html>
@@ -44,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../build/css/tailwind.css" />
+    <link rel="stylesheet" href="tailwind.css" />
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.3/dist/alpine.min.js" defer></script>
   </head>
   <body>
@@ -61,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       >
         <!-- Brand -->
         <a
-          href="../index.php"
+          href="index.html"
           class="inline-block mb-6 text-3xl font-bold tracking-wider uppercase text-primary-dark dark:text-light"
         >
         Nova Pay
@@ -103,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="forgot-password.html" class="text-sm text-blue-600 hover:underline">Forgot Password?</a>
               </div>
               <div>
-                <a href="index.php"><button
+                <a href="index.html"><button
                   type="submit"
                   class="w-full px-4 py-2 font-medium text-center text-white transition-colors duration-200 rounded-md bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 dark:focus:ring-offset-darker"
                 >
@@ -115,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Register link -->
             <div class="text-sm text-gray-600 dark:text-gray-400">
-              Don't have an account yet? <a href="register.php" class="text-blue-600 hover:underline">Register</a>
+              Don't have an account yet? <a href="register.html" class="text-blue-600 hover:underline">Register</a>
             </div>
           </div>
         </main>

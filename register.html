@@ -1,142 +1,5 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<?php
-require_once 'C:\xampp\htdocs\vtu\k-wd-dashboard\backend\config\db.php'; // Include database connection
-require_once 'C:\xampp\htdocs\vtu\k-wd-dashboard\backend\controllers\authcontroller.php'; // Include AuthController class
-include 'C:\xampp\htdocs\vtu\k-wd-dashboard\backend\api\monnify.php';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-
-    // Instantiate AuthController
-    $auth = new AuthController($pdo);
-
-    // Retrieve form data
-    $fname = trim($_POST['fname']);
-    $lname = trim($_POST['lname']);
-    $pnum = trim($_POST['pnum']);
-    $username = trim($_POST['username']);
-    $email = trim($_POST['email']);
-    $referral = trim($_POST['referral']);
-    $password = trim($_POST['password']);
-    $confirmPassword = trim($_POST['confpass']);
-    $accountNumber = generateAccountNumber($username, $email);
-    // Check if passwords match
-    if ($password !== $confirmPassword) {
-        echo 
-        "<script>  
-          Swal.fire({
-  title: 'Error',
-  text: 'Passwords do not match! ',
-  icon: 'error',
-  confirmButtonText: 'OK'
-})
-        
-        </script>";
-        exit;
-    }
-
-    // Register the user
-    $result = $auth->register($fname, $lname, $pnum, $username, $email, $referral, $password);
-
-    if ($result === "success") {
-      echo  "
-      <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-      <script>
-          Swal.fire({
-                  title: 'Error',
-                  text: 'Username or Email Already Exist',
-                  icon: 'error',
-                  confirmButtonText: 'OK'
-              });
-      
-      </script>";
-    
-    
-
-        // Redirect to login page upon success
-        
-    } else {
-        // Display error message
-        echo "<script>
-        Swal.fire({
-  title: 'Error',
-  text: 'Unable to Generate Account Number',
-  icon: 'error',
-  confirmButtonText: 'OK'
-});
-</script>";
-    }
-
-
-
-
-    // Hash the password
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-    // Check if username or email already exists
-    $checkQuery = "SELECT * FROM users WHERE username = :username OR email = :email";
-    $stmt = $pdo->prepare($checkQuery);
-    $stmt->execute(['username' => $username, 'email' => $email]);
-
-    if ($stmt->rowCount() > 0) {
-      echo "
-      <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-      <script>
-          document.addEventListener('DOMContentLoaded', function() {
-              Swal.fire({
-                  title: 'Error',
-                  text: 'Username or Email Already Exist',
-                  icon: 'error',
-                  confirmButtonText: 'OK'
-              });
-          });
-      </script>";
-     
-     
-  
-    }
-   
-;
-    // Generate Wema Bank virtual account number for the user
-    $accountNumber = generateAccountNumber($username, $email);
-
-    if (!$accountNumber) {
-        echo "<script>alert('Failed to generate account number. Please try again later.');</script>";
-        exit;
-    }
-
-    // Hash the password
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-    // Insert user into the database with the account number
-    $insertQuery = "
-        INSERT INTO users (fname, lname, pnum, username, email, referral, password, account_number) 
-        VALUES (:fname, :lname, :pnum, :username, :email, :referral, :password, :account_number)";
-    $stmt = $pdo->prepare($insertQuery);
-
-    try {
-        $stmt->execute([
-            'fname' => $fname,
-            'lname' => $lname,
-            'pnum' => $pnum,
-            'username' => $username,
-            'email' => $email,
-            'referral' => $referral,
-            'password' => $hashedPassword,
-            'account_number' => $accountNumber
-        ]);
-
-        // Redirect to login page upon success
-        header("Location: login.php?success=1");
-        exit;
-    } catch (PDOException $e) {
-        echo "<script>alert('Error registering user: " . $e->getMessage() . "');</script>";
-    }
-
-   // $stmt->close();
-   // $pdo->close();
-}
-
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -148,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../build/css/tailwind.css" />
+    <link rel="stylesheet" href="tailwind.css" />
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.3/dist/alpine.min.js" defer></script>
    
    
@@ -167,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       >
         <!-- Brand -->
         <a
-          href="../index.html"
+          href="index.html"
           class="inline-block mb-6 text-3xl font-bold tracking-wider uppercase text-primary-dark dark:text-light"
         >
           Barewa TopUp
@@ -249,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            
             <!-- Login link -->
             <div class="text-sm text-gray-600 dark:text-gray-400">
-              Already have an account? <a href="login.php" class="text-blue-600 hover:underline">Login</a>
+              Already have an account? <a href="login.html" class="text-blue-600 hover:underline">Login</a>
             </div>
           </div>
         </main>
